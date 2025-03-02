@@ -5,6 +5,8 @@ const cron = require("node-cron");
 const { Client, Events, GatewayIntentBits, Collection, MessageFlags } = require("discord.js");
 require("dotenv").config();
 
+console.log(process.env.DISCORD_TOKEN);
+
 const client = new Client(
     { intents: [
         GatewayIntentBits.Guilds],
