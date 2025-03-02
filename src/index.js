@@ -60,6 +60,15 @@ client.on(Events.InteractionCreate, async interaction => {
 
 
 client.once(Events.ClientReady, readyClient => {
+    try{
+        if(!fs.existsSync("./countdata.json")){
+            const temp = { count: 0 }
+            fs.writeFileSync("./countdata.json", JSON.stringify(temp));
+        }
+    } catch(error){
+        console.error(error);
+    }
+
     console.log(`Readiii!!!, logged in as ${readyClient.user.tag}`);
 
     cron.schedule("* 10 * * *", async () => {
