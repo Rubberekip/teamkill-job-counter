@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const fs = require("node:fs");
+const daily = require("../../methods/dailyMessage");
 
 const JSON_FILE = "countdata.json";
 
@@ -22,7 +23,7 @@ module.exports = {
 
         console.log(data);
 
-        data.count = 0;
+        data.count = -1;
         console.log("jop has been stuupid");
 
         console.log(data);
@@ -36,5 +37,8 @@ module.exports = {
         }
        
 		await interaction.reply("oops, jop did it again");
+
+        
+        await daily.dailyMessage(interaction.client);
 	},
 };
