@@ -6,6 +6,7 @@ const { Client, Events, GatewayIntentBits, Collection, MessageFlags } = require(
 require("dotenv").config();
 
 console.log(process.env.DISCORD_TOKEN);
+const JSON_FILE = "./countdata.json";
 
 const client = new Client(
     { intents: [
@@ -61,9 +62,9 @@ client.on(Events.InteractionCreate, async interaction => {
 
 client.once(Events.ClientReady, readyClient => {
     try{
-        if(!fs.existsSync("./countdata.json")){
+        if(!fs.existsSync(JSON_FILE)){
             const temp = { count: 0 }
-            fs.writeFileSync("./countdata.json", JSON.stringify(temp));
+            fs.writeFileSync(JSON_FILE, JSON.stringify(temp));
         }
     } catch(error){
         console.error(error);
