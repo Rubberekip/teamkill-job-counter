@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const fs = require("node:fs");
 const daily = require("../../methods/dailyMessage");
-
-const JSON_FILE = "countdata.json";
+const { getCount, resetCount } = require('../../controllers/jop.controller');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,33 +8,27 @@ module.exports = {
 		.setDescription('Jop being stuupid'),
 	async execute(interaction) {
 
-        let data;
-        
-        try{
-            const temp = fs.readFileSync(JSON_FILE);
-            data = JSON.parse(temp);
-        } catch(error){
-            console.error(error);
-            await interaction.reply("oh no! something went wrong!");
+        console.log("-----{ RESET }-----")
+        let countOld = await getCount();
+
+        if(countOld == -1){
+            console.error("COUNT IS NOT FOUND IN DATABASE");
+            await interaction.reply("Oh no! Something went horribly wrong!")
             return;
         }
 
-        console.log(data);
+        await resetCount();
+        let countNew = await getCount();
 
-        data.count = -1;
-        console.log("jop has been stuupid");
-
-        console.log(data);
-
-        try{
-            fs.writeFileSync(JSON_FILE, JSON.stringify(data));
-        } catch(error){
-            console.error(error);
-            await interaction.reply("oh no! something went wrong!");
+        if(countNew == -1){
+            console.error("COUNT IS NOT FOUND IN DATABASE");
+            await interaction.reply("Oh no! Something went horribly wrong!")
             return;
         }
-       
-		await interaction.reply("oops, jop did it again");
+
+		await interaction.reply("Oops Jop did it again");
+
+        console.log("-----{ END RESET }-----")
 
         
         await daily.dailyMessage(interaction.client);

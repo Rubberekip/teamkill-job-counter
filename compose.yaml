@@ -8,48 +8,45 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  postgresdb:
+    image: postgres
+    container_name: postgres
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+    ports:
+      - $DB_LOCAL_PORT:$DB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/postgres
   server:
+    depends_on:
+      - postgresdb
+    # restart: unless-stopped
+    env_file: ./.env
     build:
       context: .
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
       NODE_ENV: production
       DISCORD_TOKEN: 
       CLIENT_ID: 
       GUILD_ID: 
       GENERAL_CHANNEL_ID: 
-    ports:
-      - 8000:8000
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: 123456
+      DB_NAME: jop
+      DB_PORT: 5432
+    stdin_open: true
+    tty: true
 
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker-compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
+volumes:
+  db:
+
+      
+
 

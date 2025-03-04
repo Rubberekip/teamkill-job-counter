@@ -1,12 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const daily = require("./methods/dailyMessage");
+const increase = require("./methods/increaseCount");
 const cron = require("node-cron");
 const { Client, Events, GatewayIntentBits, Collection, MessageFlags } = require("discord.js");
-require("dotenv").config();
+const { initJop } = require('./controllers/jop.controller');
 
-console.log(process.env.DISCORD_TOKEN);
-const JSON_FILE = "./countdata.json";
+require("dotenv").config();
 
 const client = new Client(
     { intents: [
@@ -60,19 +60,13 @@ client.on(Events.InteractionCreate, async interaction => {
 
 
 
-client.once(Events.ClientReady, readyClient => {
-    try{
-        if(!fs.existsSync(JSON_FILE)){
-            const temp = { count: 0 }
-            fs.writeFileSync(JSON_FILE, JSON.stringify(temp));
-        }
-    } catch(error){
-        console.error(error);
-    }
-
-    console.log(`Readiii!!!, logged in as ${readyClient.user.tag}`);
+client.once(Events.ClientReady, async readyClient => {
+    console.log(`Aaah, another day, another dollar \nLogged in as ${readyClient.user.tag}`);
+    
+    await initJop();
 
     cron.schedule("* 10 * * *", async () => {
+        await increase.increaseCount();
         await daily.dailyMessage(client);
     });
 
